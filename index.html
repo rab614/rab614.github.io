@@ -1,3 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>37的生日祝福</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c1445 0%, #1c0f30 100%);
+            font-family: 'Rajdhani', 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            color: #87CEEB;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            font-weight: 500;
+        }
+
+        /* 高分辨率星空 */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 3s) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        /* 优化的流星效果 */
+        .meteor {
+            position: absolute;
+            width: 2px;
+            height: 50px;
+            background: linear-gradient(to bottom, transparent, #d0e9ff 80%, rgba(135, 206, 235, 0.7));
+            opacity: 0;
+            animation: meteorFall linear infinite;
+            transform-origin: top left;
+        }
+        
+        @keyframes meteorFall {
+            0% { 
+                opacity: 0;
+                transform: translate(var(--start-x), var(--start-y)) rotate(var(--angle));
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                opacity: 0;
+                transform: translate(calc(var(--start-x) + var(--distance-x)), 
+                             calc(var(--start-y) + var(--distance-y))) 
+                        rotate(var(--angle));
+            }
+        }
+        
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            background: rgba(25, 25, 80, 0.6);
+            border-radius: 20px;
+            text-align: center;
+            z-index: 20;
+            box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(135, 206, 235, 0.7);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            line-height: 1.6;
+            margin: 15px 0;
+            letter-spacing: 0.5px;
+        }
+        
+        .signature {
+            font-style: italic;
+            margin-top: 25px;
+            color: #ADD8E6;
+            font-weight: 500;
+        }
+
+        .card-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .card {
+            width: 280px;
+            height: 400px;
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            background: linear-gradient(145deg, #1a1a50, #0d0d29);
+            transform: translateY(100%);
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        
+        .card-gold {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ffd700, #daa520, #b8860b, #ffd700);
+            border-radius: 17px;
+            z-index: -1;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+            100% { box-shadow: 0 0 30px rgba(255, 215, 0, 1); }
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .card-front {
+            background-color: rgba(25, 25, 80, 0.9);
+            padding: 20px;
+        }
+        
+        .card-back {
+            background: linear-gradient(to bottom, #0c1445, #1c0f30);
+            transform: rotateY(180deg);
+        }
+        
+        /* 高分辨率点阵化三七形象 */
+        .dot-matrix {
+            position: relative;
+            width: 230px;
+            height: 230px;
+            margin-bottom: 20px;
+        }
+        
+        .dot {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #87ceeb, #b0e0e6);
+            opacity: 0.8;
+            box-shadow: 0 0 8px rgba(135, 206, 235, 0.6);
+            z-index: 1;
+        }
+        
+        .matrix-detail {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #5d9bce;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+        
+        .gold-decoration {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(to right, #ffd700, #daa520, #ffd700);
+            border-radius: 10px;
+            box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
+            z-index: 2;
+        }
+        
+        .card-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            font-weight: 700;
+            z-index: 3;
+        }
+        
+        .card-description {
+            color: #87CEEB;
+            font-size: 1rem;
+            line-height: 1.4;
+            padding: 0 20px;
+            z-index: 3;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        
+        .watermark {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 11px;
+            text-align: right;
+            line-height: 1.5;
+            user-select: none;
+            z-index: 10;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div id="meteors"></div>
+    
+    <div class="message">
+        <h1>🎂 Happy Birthday, Timekeeper!</h1>
+        <p>"The truth of the phenomenal world surges like waves<br>But at this moment - accept this star just for you."</p>
+        <div class="signature">
+            <p>—— From 37's Birthday Secret · Coastline 1999</p>
+            <p>"May every formula shine for you,<br>and every summer be filled with the sea breeze."</p>
+        </div>
+    </div>
+    
+    <div class="card-container" id="cardContainer">
+        <div class="card" id="birthdayCard">
+            <div class="card-gold"></div>
+            <div class="card-inner" id="cardInner">
+                <div class="card-front">
+                    <!-- 高分辨率点阵图 -->
+                    <div class="dot-matrix">
+                        <!-- 主体轮廓 -->
+                        <div class="dot" style="width: 60px; height: 60px; top: 40px; left: 85px; background: linear-gradient(135deg, #63b3ff, #87CEEB);"></div>
+                        <div class="dot" style="width: 45px; height: 45px; top: 50px; left: 55px; background: linear-gradient(135deg, #5fa9e8, #7fbdee);"></div>
+                        <div class="dot" style="width: 45px; height: 45px; top: 50px; left: 125px; background: linear-gradient(135deg, #5fa9e8, #7fbdee);"></div>
+                        <div class="dot" style="width: 40px; height: 40px; top: 95px; left: 40px; background: linear-gradient(135deg, #549bdc, #75afec);"></div>
+                        <div class="dot" style="width: 40px; height: 40px; top: 95px; left: 140px; background: linear-gradient(135deg, #549bdc, #75afec);"></div>
+                        <div class="dot" style="width: 55px; height: 55px; top: 120px; left: 85px; background: linear-gradient(135deg, #4a8bcf, #6aa3e5);"></div>
+                        
+                        <!-- 高分辨率细节 -->
+                        <div class="matrix-detail" style="top: 35px; left: 95px;"></div>
+                        <div class="matrix-detail" style="top: 45px; left: 70px;"></div>
+                        <div class="matrix-detail" style="top: 45px; left: 130px;"></div>
+                        <div class="matrix-detail" style="top: 85px; left: 50px;"></div>
+                        <div class="matrix-detail" style="top: 85px; left: 140px;"></div>
+                        <div class="matrix-detail" style="top: 105px; left: 80px;"></div>
+                        <div class="matrix-detail" style="top: 105px; left: 110px;"></div>
+                        <div class="matrix-detail" style="top: 125px; left: 75px;"></div>
+                        <div class="matrix-detail" style="top: 125px; left: 115px;"></div>
+                        <div class="matrix-detail" style="top: 145px; left: 85px;"></div>
+                        <div class="matrix-detail" style="top: 145px; left: 105px;"></div>
+                        
+                        <!-- 装饰元素 -->
+                        <div class="gold-decoration" style="top: 160px; left: 50px; width: 130px; transform: rotate(-2deg);"></div>
+                        <div class="gold-decoration" style="top: 170px; left: 45px; width: 140px; transform: rotate(3deg);"></div>
+                        <div class="gold-decoration" style="top: 180px; left: 40px; width: 150px; transform: rotate(0deg);"></div>
+                    </div>
+                    <div class="card-title">37 · The Star of Hermes</div>
+                    <p class="card-description">Open your birthday blessing</p>
+                </div>
+                <div class="card-back">
+                    <div class="card-title">Timekeeper's Blessing</div>
+                    <p class="card-description">Timelines converge at this moment<br>Your existence is the perfect law<br>May you sail happily in truth's ocean</p>
+                    
+                    <!-- 点阵装饰 -->
+                    <div class="matrix-detail" style="position: absolute; top: 40px; left: 60px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 60px; left: 85px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 90px; left: 70px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 120px; left: 105px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 150px; left: 80px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 180px; left: 100px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 210px; left: 70px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 240px; left: 110px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 270px; left: 90px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 300px; left: 60px;"></div>
+                    <div class="matrix-detail" style="position: absolute; top: 330px; left: 120px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="watermark">
+        <div>created by RAB</div>
+        <div>May you be blessed tonight with the sweetest of dreams</div>
+    </div>
+    
+    <script>
+        // ===== 生成高密度星空背景 =====
+        function createStars() {
+            const container = document.getElementById('stars');
+            const starCount = 300; // 增加星星密度
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                const size = Math.random() * 2.5 + 0.5; // 更小的星星尺寸
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const duration = 1.5 + Math.random() * 4;
+                const delay = Math.random() * 10;
+                
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${posX}%`;
+                star.style.top = `${posY}%`;
+                star.style.animationDelay = `${delay}s`;
+                star.style.setProperty('--duration', `${duration}s`);
+                
+                container.appendChild(star);
+            }
+        }
+        
+        // ===== 可靠的流星生成系统 =====
+        function createMeteors() {
+            const container = document.getElementById('meteors');
+            const meteorCount = 40; // 增加流星数量
+            
+            // 先清空容器
+            container.innerHTML = '';
+            
+            for (let i = 0; i < meteorCount; i++) {
+                const meteor = document.createElement('div');
+                meteor.classList.add('meteor');
+                
+                // 随机起点位置（左上侧）
+                const startX = Math.random() < 0.5 ? 
+                    -5 : // 左侧开始
+                    Math.random() * 30; // 或上侧开始
+                    
+                const startY = startX === -5 ? 
+                    Math.random() * 50 : // 从左侧开始时，在垂直方向随机
+                    -5; // 从上侧开始时，固定y值
+                
+                // 目标终点（右下方向）
+                const endX = startX + Math.random() * 60 + 40;
+                const endY = startY + Math.random() * 60 + 30;
+                
+                // 计算运动角度和距离
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                const distanceX = endX - startX;
+                const distanceY = endY - startY;
+                
+                // 随机参数
+                const duration = 1.5 + Math.random() * 1.5;
+                const delay = Math.random() * 20;
+                
+                meteor.style.setProperty('--start-x', `${startX}%`);
+                meteor.style.setProperty('--start-y', `${startY}%`);
+                meteor.style.setProperty('--angle', `${angle}deg`);
+                meteor.style.setProperty('--distance-x', `${distanceX}%`);
+                meteor.style.setProperty('--distance-y', `${distanceY}%`);
+                meteor.style.animation = `meteorFall ${duration}s linear ${delay}s infinite`;
+                
+                container.appendChild(meteor);
+            }
+        }
+        
+        // ===== 粒子消散效果 =====
+        function shatterCard(card) {
+            const container = card.parentElement;
+            const rect = card.getBoundingClientRect();
+            const particleCount = 120; // 增加粒子数量
+            
             // 移除卡片
             card.style.display = 'none';
             
@@ -85,7 +500,13 @@
             createStars();         // 生成星空
             createMeteors();       // 生成流星
             setTimeout(showCardAnimation, 1000); // 启动卡片动画
+            
+            // 每小时重新生成流星，防止动画停止
+            setInterval(createMeteors, 3600000);
         });
+        
+        // 确保页面尺寸变化时流星位置正确
+        window.addEventListener('resize', createMeteors);
     </script>
 </body>
 </html>
